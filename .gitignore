@@ -1,1 +1,5 @@
 /DDaTCFdrafttext.html
+
+\.idea/
+venv/
+__pycache__/
