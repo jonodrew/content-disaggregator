@@ -1,3 +1,4 @@
+import csv
 import bs4
 from typing import List
 import re
@@ -36,6 +37,9 @@ class RoleLevel:
     def __init__(self):
         self.name = ""
         self.skills: List[SkillLevel] = []
+
+    def __repr__(self):
+        return self.name
 
 
 class ContentParser:
@@ -87,14 +91,24 @@ class ContentParser:
             elif tag.name == "h2":
                 return role_level
 
+
 def main():
+    field_names = ["Role", "Role level", "Skill name", "Skill description", "Level", "Skill level"]
     parser = ContentParser()
     parser.process_content()
-    # print(len(parser.generic_roles))
-    # for key, value in parser.generic_roles.items():
-    #     print(key, value.role_description, value.generic_skills)
-
-
+    with open("output_file.csv", 'w') as output_file:
+        dict_writer = csv.DictWriter(output_file, field_names)
+        dict_writer.writeheader()
+        for key, value in parser.generic_roles.items():
+            output = dict()
+            output["Role"] = key
+            for role in value.role_levels:
+                output["Role level"] = role.name
+                for skill in role.skills:
+                    output["Skill name"] = skill.skill_name
+                    output["Level"] = skill.level
+                    output["Skill level"] = skill.skill_description
+                    dict_writer.writerow(output)
 
 
 if __name__ == '__main__':
