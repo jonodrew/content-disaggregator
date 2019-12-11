@@ -7,14 +7,21 @@ class GenericSkill:
     def __init__(self, skill_content: str):
         self.skill_name = skill_content.split('.', 1)[0]
         self.skill_description = skill_content.split('.', 1)[1]
+        last_open_paran = self.skill_description.rfind('(')
+        self.skill_description = self.skill_description[:last_open_paran]
 
     def __repr__(self):
         return f"{self.skill_name}. {self.skill_description}"
 
 
-class SkillLevel:
-    pass
+class SkillLevel(GenericSkill):
+    def __init__(self, skill_content):
+        super().__init__(skill_content)
+        last_open_paran = skill_content.rfind('(')
+        self.level = skill_content[last_open_paran:]
 
+    def __repr__(self):
+        return f"{super().__repr__()} {self.level}"
 
 class GenericRole:
     def __init__(self):
