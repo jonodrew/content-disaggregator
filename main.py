@@ -23,15 +23,18 @@ class SkillLevel(GenericSkill):
     def __repr__(self):
         return f"{super().__repr__()} {self.level}"
 
+
 class GenericRole:
     def __init__(self):
         self.role = ""
         self.role_description = ""
         self.generic_skills = []
+        self.role_levels = []
 
 
 class RoleLevel:
     def __init__(self):
+        self.name = ""
         self.skills: List[SkillLevel] = []
 
 
@@ -62,12 +65,27 @@ class ContentParser:
                 # we're in the generic skills
                 generic_role.generic_skills = self.process_generic_skills(current_sib)
             elif re.search(generic_role.role.lower(), current_sib.text.lower()) and current_sib.name == "h2":
-                print(current_sib.next_sibling.next_sibling.contents)
+                generic_role.role_levels.append(self.process_role_level(current_sib))
 
     def process_generic_skills(self, skills_required_tag: bs4.Tag):
         generic_skills = [GenericSkill(list_item.text) for list_item in skills_required_tag.next_sibling.contents]
         return generic_skills
 
+    def process_role_level(self, role_level_tag: bs4.Tag):
+        """
+        This can't deal with specialisms in role levels. Content will need to be brought out separately
+        :param role_level_tag:
+        :type role_level_tag:
+        :return:
+        :rtype:
+        """
+        role_level = RoleLevel()
+        role_level.name = role_level_tag.text
+        for tag in role_level_tag.next_siblings:
+            if tag.next_sibling.name == "ul" and (tag.previous_sibling.text[:6] == "Skills" or tag.text[:6] == "Skills"):
+                role_level.skills = [SkillLevel(list_tag.text) for list_tag in tag.next_sibling.contents]
+            elif tag.name == "h2":
+                return role_level
 
 def main():
     parser = ContentParser()
