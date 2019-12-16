@@ -68,7 +68,7 @@ class ContentParser:
             elif re.match("Skills required", current_sib.previous_sibling.text):
                 # we're in the generic skills
                 generic_role.generic_skills = self.process_generic_skills(current_sib)
-            elif re.search(generic_role.role.lower(), current_sib.text.lower()) and current_sib.name == "h2":
+            elif current_sib.name == "h2":
                 generic_role.role_levels.append(self.process_role_level(current_sib))
 
     def process_generic_skills(self, skills_required_tag: bs4.Tag):
